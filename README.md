@@ -15,7 +15,7 @@ In your security group allow access to ssh and http
 
 ### Install MySQL and the Apache, PHP, Git
 
-	$ sudo yum install -y mysqld-server httpd php-mysql git
+	$ sudo yum install -y mysql-server httpd php php-mysql git
 
 ### Download and unpack joomla 
 
@@ -56,7 +56,22 @@ In your security group allow access to ssh and http
 ### Make a database backup
 
 	$ mkdir /var/www/html/mysqldump 
-	$ mysqldump -u root jokiga > mysqldump/backup-`date +%Y%m%d_%H%M%S`.sql
+	$ mysqldump -u root jokiga > mysqldump/jokiga-mysqldump.sql
 	$ git add --all
 	$ git commit -a -m "Joomla post install checkpoint"
 
+## Restoring JoKiGa from GitHub
+
+### Restore html into an empty folder
+
+	$ sudo chown ec2-user /var/www/html
+	$ cd /var/www/html
+	$ git init
+	$ git remote add origin git@github.com:ddiesler/jokiga.git
+	$ git pull origin master
+	$ sudo service httpd restart
+
+### Restore database content
+
+	$ sudo service mysqld restart
+	$ mysql -u root -p jokiga < jokiga-mysqldump.sql
